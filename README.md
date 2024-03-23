@@ -8,11 +8,9 @@ IMPORTANT: THIS GITHUB REPO IS STILL WIP
 3. [Third Example](#third-example)
 4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
 
-This small project showcases the basics of developing an MLOps project with AWS Sagemaker. With AWS Sagemaker, we have at hand all the tooling required to build an end-to-end pipeline that takes a Machine Learning project from idea to production.
+This small code repository showcases the basics of developing an MLOps project. With AWS Sagemaker, we have at hand all the tooling required to build an end-to-end pipeline that takes a Machine Learning project from idea to production.
 
 In this project, we will train a Job title classifier, produce corresponding preprocessing, training and evaluation scripts, and integrate them into a Sagemaker pipeline which outputs a model artifact ready for deployment in a production environment.
-
-
 
 
 ## Prerequisites
@@ -89,7 +87,7 @@ test_s3_url = f"s3://{bucket_name}/{bucket_prefix}/test"
 output_s3_url = f"s3://{bucket_name}/{bucket_prefix}/output"
 ```
 
-The variables related to Sagemaker sdk are required for interacting with the `boto3` library, which provides programatic python interaction with the Sagemaker service. The pipeline objects are names utilized to identify the multiple sagemaker objects required to produce our MLOps pipeline. Instance types and counts describe which computational resources are going to be utilized for processing our datasets and training our models. Finally, s3 urls variables correspond to the locations of our training, validation and test splits in the S3 storage service provided by aws, as well as the location on which the output produced by the evaluation of our model is to be stored.
+The variables related to Sagemaker sdk are required for interacting with the `boto3` library, which provides programatic interaction with the Sagemaker service using python. The pipeline objects are names utilized to identify the multiple sagemaker objects required to produce our MLOps pipeline. Instance types and counts describe which computational resources are going to be utilized for processing our datasets and training our models. Finally, s3 urls variables correspond to the locations of our training, validation and test splits in the S3 storage service provided by aws, as well as the location on which the output produced by the evaluation of our model is to be stored.
 
 Let's print the resulting variables for future reference:
 ```python
@@ -103,6 +101,19 @@ print(f"Model prediction baseline S3 url: {prediction_baseline_s3_url}")
 ```
 
 ## The dataset
+
+The O*NET database [[https://www.onetonline.org/]] contains hundreds of standardized and occupation-specific descriptors on multiple occupations covering the entire U.S. economy. It is continually updated by specialists in a broad range of industries and made available to the public at no cost. 
+
+The O*NET taxonomy [[https://www.onetcenter.org/taxonomy.html]] assigns one of each of the 23 Major groups, 98 Minor groups, 459 broad occupations, 867 detailed SOC occupations. This is done by assigning specific codes (see the taxonomy website) to each occupation. For example, *"Neurodiagnostic Technologists"* are assigned the code 29-2099.01, on which 
+
+- the first two digits 29 represent the Major Group "Healthcare Practitioners and Technical Occupations",
+- the next two digits 20 represent the Minor Group  "Health Technologists and Technicians",
+- the next two digits 99   represent the broad occupation group "All Other health technicians and technologist" and
+- the final two digits 01 represent the detailed occupation "Neurodiagnostic Technologists".
+
+In this project, we will focus in classifying standard job titles into one of the 23 Major groups listed in the O*NET database. Each of these groups (classes) has standard and alternate titles associated with them, as listed in the public files `Occupation Data.xlsx` [[https://www.onetcenter.org/dl_files/database/db_28_1_excel/Occupation%20Data.xlsx]] and `Alternate titles.xlsx`[[https://www.onetcenter.org/dl_files/database/db_28_1_excel/Alternate%20Titles.xlsx]] made available by O*NET.  This results in a labeled dataset for our multilabel classification task on which each of the titles (standard and alternates) is assigned a single class (Major group).
+
+
 ## Third Example
 ## [Fkurth Example](http://www.fourthexample.com)
 

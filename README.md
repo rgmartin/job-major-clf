@@ -34,7 +34,6 @@ The notebook "Start Here.ipynb" contains the python code to complete this projec
 
 The remaining sections of this tutorial describe each of the sections of the `Start Here.ipynb` notebook, which you can follow at the same time that you run the corresponding notebook cells.
 
----
 
 ## Setup
 To begin, setup the libraries that are needed for this project
@@ -99,7 +98,6 @@ print(f"Data baseline S3 url: {baseline_s3_url}")
 print(f"Evaluation metrics S3 url: {evaluation_s3_url}")
 print(f"Model prediction baseline S3 url: {prediction_baseline_s3_url}")
 ```
----
 
 ## The dataset
 
@@ -177,8 +175,70 @@ except NameError:
         
     print(f"Uploaded datasets to {input_s3_urls}")
 ```
+## Create the ML Project programatically
+
+AWS provides multiple Software Development Kits (SDK) that allow accessing its services programatically. This is a convenient alternative to accessing their UI that allow for better traceability and versioning of the project creation process. The `boto3` library exposes the AWS SDK in the `python` language. We are going to use it to retrieve the MLOps project template provided in the `service catalog` for building and training a Machine Learning model:
+
+```python
+#Define clients and services
+sm = boto3.client("sagemaker")
+sc = boto3.client("servicecatalog")
+
+sc_provider_name = "Amazon SageMaker"
+sc_product_name = "MLOps template for model building and training"
+
+#Find the ProductId for the MLOps project template
+p_ids = [p['ProductId'] for p in sc.search_products(
+    Filters={
+        'FullTextSearch': [sc_product_name]
+    },
+)['ProductViewSummaries'] if p["Name"]==sc_product_name]
+
+if not len(p_ids):
+    raise Exception("No Amazon SageMaker ML Ops products found!")
+elif len(p_ids) > 1:
+    raise Exception("Too many matching Amazon SageMaker ML Ops products found!")
+else:
+    product_id = p_ids[0]
+    print(f"ML Ops product id: {product_id}")
 
 
+#Retrieve Provisioning Artifact ID
+
+provisioning_artifact_id = sorted(
+    [i for i in sc.list_provisioning_artifacts(
+        ProductId=product_id
+    )['ProvisioningArtifactDetails'] if i['Guidance']=='DEFAULT'],
+    key=lambda d: d['Name'], reverse=True)[0]['Id']
+```
+
+No we create the project using the obtained product and artifact ID from the AWS ServiceCatalog. A waiting cycle is introduced until the project creation is completed
+
+```python
+#Define project name
+project_name = f"test-job-major-clf"
+
+# create SageMaker project
+r = sm.create_project(
+    ProjectName=project_name,
+    ProjectDescription="Model build project",
+    ServiceCatalogProvisioningDetails={
+        'ProductId': product_id,
+        'ProvisioningArtifactId': provisioning_artifact_id,
+    },
+)
+
+print(r)
+
+#Wait for the project creation to be complete
+while sm.describe_project(ProjectName=project_name)['ProjectStatus'] != 'CreateCompleted':
+    print("Waiting for project creation completion")
+    sleep(10)
+    
+print(f"MLOps project {project_name} creation completed!")
+
+```
+## Clone the default project code to AWS Studio File system
 
 
 

@@ -239,6 +239,18 @@ print(f"MLOps project {project_name} creation completed!")
 
 ```
 ## Clone the default project code to AWS Studio File system
+Clone the project default code to the Studio file system:
+1. Choose **Home** in the Studio sidebar
+2. Select **Deployments** and then select **Projects**
+3. Click on the name of the project you created to open the project details tab
+4. In the project tab, choose **Repositories**
+5. In the **Local path** column for the repository choose **clone repo....**
+6. In the dialog box that appears choose **Clone Repository**
+
+## Update the default code with our classifier pipeline
+
+Now that we have a local copy of the created MLOps project in AWS Sagemaker studio, we must replace the default pipeline `abalone` with the one provided for this project in the `jobmajorclf` folder of this tutorial repository.
+
 
 
 

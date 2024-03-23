@@ -1,3 +1,5 @@
+IMPORTANT: THIS GITHUB REPO IS STILL WIP
+
 # Tutorial: Developing a simple end-to-end MLOps project with AWS Sagemaker
 
 ### Table of contents

@@ -99,6 +99,7 @@ print(f"Data baseline S3 url: {baseline_s3_url}")
 print(f"Evaluation metrics S3 url: {evaluation_s3_url}")
 print(f"Model prediction baseline S3 url: {prediction_baseline_s3_url}")
 ```
+---
 
 ## The dataset
 
@@ -112,6 +113,73 @@ The O*NET taxonomy [[https://www.onetcenter.org/taxonomy.html]] assigns one of e
 - the final two digits 01 represent the detailed occupation "Neurodiagnostic Technologists".
 
 In this project, we will focus in classifying standard job titles into one of the 23 Major groups listed in the O*NET database. Each of these groups (classes) has standard and alternate titles associated with them, as listed in the public files `Occupation Data.xlsx` [[https://www.onetcenter.org/dl_files/database/db_28_1_excel/Occupation%20Data.xlsx]] and `Alternate titles.xlsx`[[https://www.onetcenter.org/dl_files/database/db_28_1_excel/Alternate%20Titles.xlsx]] made available by O*NET.  This results in a labeled dataset for our multilabel classification task on which each of the titles (standard and alternates) is assigned a single class (Major group).
+
+Let's download the two source files into our local `data` folder:
+```bash
+# Download datasets
+!wget -P data/ https://www.onetcenter.org/dl_files/database/db_28_1_excel/Occupation%20Data.xlsx
+!wget -P data/ https://www.onetcenter.org/dl_files/database/db_28_1_excel/Alternate%20Titles.xlsx
+```
+Now, a quick inspection of their content:
+
+```python
+
+df_alt = pd.read_excel('data/Occupation Data.xlsx')
+df_occ = pd.read_excel('data/Alternate Titles.xlsx')
+
+df_alt.head()
+df_occ.head()
+
+```
+```
+O*NET-SOC Code	Title	Description
+0	11-1011.00	Chief Executives	Determine and formulate policies and provide o...
+1	11-1011.03	Chief Sustainability Officers	Communicate and coordinate with management, sh...
+2	11-1021.00	General and Operations Managers	Plan, direct, or coordinate the operations of ...
+3	11-1031.00	Legislators	Develop, introduce, or enact laws and statutes...
+4	11-2011.00	Advertising and Promotions Managers	Plan, direct, or coordinate advertising polici...
+
+
+O*NET-SOC Code	Title	Alternate Title	Short Title	Source(s)
+0	11-1011.00	Chief Executives	Aeronautics Commission Director	NaN	08
+1	11-1011.00	Chief Executives	Agency Owner	NaN	10
+2	11-1011.00	Chief Executives	Agricultural Services Director	NaN	08
+3	11-1011.00	Chief Executives	Arts and Humanities Council Director	NaN	08
+4	11-1011.00	Chief Executives	Bank President	NaN	09
+```
+
+
+
+These commands will show that each Title and Alternate titles is associated with a single O*NET-SOC Code. As discussed before, we will only be working with the major occupation group for our classification task, that is, the first two digits of the Codes. 
+
+Now we will upload these files to AWS S3 storage for easy access during the preprocessing stage of our MLOps pipeline:
+
+```python
+
+try:
+    input_s3_urls
+except NameError:      
+    # If input_s3_url is not defined, upload the dataset to S3 and store the path
+    input_s3_urls = [
+        sagemaker.Session().upload_data(
+            path="data/Alternate Titles.xlsx",
+            bucket=bucket_name,
+            key_prefix=f"{bucket_prefix}/input"
+        ),
+        sagemaker.Session().upload_data(
+            path="data/Occupation Data.xlsx",
+            bucket=bucket_name,
+            key_prefix=f"{bucket_prefix}/input"
+        ),
+    ]
+        
+        
+        
+    print(f"Uploaded datasets to {input_s3_urls}")
+```
+
+
+
 
 
 ## Third Example

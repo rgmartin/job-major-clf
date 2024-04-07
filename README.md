@@ -252,10 +252,11 @@ Clone the project default code to the Studio file system:
 Now that we have a local copy of the created MLOps project in AWS Sagemaker studio, we must replace the default pipeline `abalone` with the one provided for this project in the `jobmajorclf` folder of this tutorial repository.
 
 
+```bash
+cp -r 
 
+```
 
-## Third Example
-## [Fkurth Example](http://www.fourthexample.com)
 
 
 

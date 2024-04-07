@@ -152,3 +152,5 @@ After successful completion of all the steps listed in `Start here.ipynb`, the r
 
 ![alt text](Diagram.png "Pipeline diagram")
 
+It's not the goal of this tutorial to dive into the details of each of these steps. Here an eagle-eye overview: the `Preprocess` step transforms each of the labeled records into tokenized datasets that are suitable for training a classifier using Bert-like language models. The `Train` step proceeds with the training of a distilBERT model to classify each record into one of the job majors. The performance of the obtained model is assessed with the `Evaluate` by computing the f1 global score of the predictions against the true labels of the job titles. If the score surpasses a desired treshold (f1), the `ConditionalStep`  will submit the model to the Model Registry with the `RegisterModel` step, otherwise, the pipeline fails with the `FailStep` output.
+
